@@ -257,4 +257,40 @@ prim = s.sort_values('word_date').groupby('user_id').first()
 print('D30 manhã    :', round(prim[prim['manha']]['active_d30'].mean()*100, 1), '%')
 print('D30 não-manhã:', round(prim[~prim['manha']]['active_d30'].mean()*100, 1), '%')
 
+# %% Montar tabela final por usuário (base do dashboard)
+s['venceu'] = (s['result'] == 'win')
+
+# comportamento agregado por usuário
+agg = s.groupby('user_id').agg(
+    n_partidas=('session_id', 'size'),
+    streak_max=('streak_day', 'max'),
+    taxa_vitoria=('venceu', 'mean'),
+    tempo_medio_seg=('time_to_complete_sec', 'mean'),
+    pct_manha=('manha', 'mean'),
+    pct_newsletter=('newsletter_open_before_game', 'mean'),
+    taxa_volta_dia_seguinte=('played_next_day', 'mean'),
+    device=('device', lambda x: x.mode().iloc[0]),
+).reset_index()
+
+# alvo e comportamento da PRIMEIRA partida (coorte)
+prim = s.sort_values('word_date').groupby('user_id').agg(
+    reteve_d30=('active_d30', 'first'),
+    comecou_manha=('manha', 'first'),
+).reset_index()
+
+base = agg.merge(prim, on='user_id')
+base['reteve_d30'] = base['reteve_d30'].astype(int)
+base['comecou_de_manha'] = base['comecou_manha'].map({True: 'Manhã', False: 'Outro horário'})
+base = base.drop(columns='comecou_manha')
+
+# juntar perfil (left join: mantém os 1200, perfil fica vazio pra quem não respondeu)
+base = base.merge(
+    p[['user_id', 'sector', 'salary_range', 'age_range', 'company_size', 'orders_food_delivery']],
+    on='user_id', how='left')
+
+# salvar pra alimentar o dashboard
+base.to_csv('dashboard_dados.csv', index=False)
+print('tabela do dashboard:', base.shape)
+base.head()
+
 # %%
