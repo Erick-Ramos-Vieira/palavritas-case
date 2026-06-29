@@ -8,6 +8,12 @@ Case técnico para a vaga de Analista de Dados (Produto e Growth) do the news. A
 - `documento_analise.md`: o documento de análise escrito para leitura não técnica, com as três entregas (limpeza e diagnóstico, análise, proposta). Os números estatísticos exatos estão numa nota no final.
 - Os três CSVs do dataset (`*sessions*.csv`, `*attempts*.csv`, `*user_profile*.csv`) devem ficar na mesma pasta do `analise.py`. O script localiza cada um pelo nome.
 
+## Dashboard
+
+Dashboard interativo com os principais achados (retenção D30, efeito do horário, comparação por perfil):
+
+[Ver dashboard no Looker Studio](https://docs.google.com/spreadsheets/d/1RefhXLKcqwZyIpC-eJsDtp8Fv7hlitEPSlLnuAP6rKY/edit?usp=sharing)
+
 ## Como rodar
 
 Requer Python 3 com as bibliotecas:
