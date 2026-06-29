@@ -12,7 +12,7 @@ Case técnico para a vaga de Analista de Dados (Produto e Growth) do the news. A
 
 Dashboard interativo com os principais achados (retenção D30, efeito do horário, comparação por perfil):
 
-[Ver dashboard no Looker Studio](https://docs.google.com/spreadsheets/d/1RefhXLKcqwZyIpC-eJsDtp8Fv7hlitEPSlLnuAP6rKY/edit?usp=sharing)
+[Ver dashboard no Looker Studio](https://datastudio.google.com/reporting/4d2ca5bf-0f08-4826-8989-1ef9147644b2)
 
 ## Como rodar
 
