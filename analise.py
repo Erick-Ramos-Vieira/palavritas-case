@@ -293,4 +293,35 @@ base.to_csv('dashboard_dados.csv', index=False)
 print('tabela do dashboard:', base.shape)
 base.head()
 
+# %% RESUMO: testes de significância
+# Consolidação dos testes estatísticos feitos ao longo da análise.
+from scipy.stats import chi2_contingency
+
+print('=== 1. Começar de manhã x retenção D30 ===')
+prim = s.sort_values('word_date').groupby('user_id').first()
+tab = pd.crosstab(prim['manha'], prim['active_d30'])
+chi2, pval, dof, esp = chi2_contingency(tab)
+phi = (chi2 / tab.values.sum()) ** 0.5
+print(f'p-valor = {pval:.4f} | phi = {phi:.3f} | {"significativo" if pval < 0.05 else "não significativo"}')
+print('-> efeito real porém pequeno\n')
+
+print('=== 2. Perfil x retenção D30 (7 variáveis) ===')
+d30 = prim['active_d30'].astype(int).rename('d30')
+m = p.merge(d30, on='user_id', how='inner')
+for col in ['sector','salary_range','primary_device','orders_food_delivery','job_role','age_range','company_size']:
+    sub = m.dropna(subset=[col])
+    t = pd.crosstab(sub[col], sub['d30'])
+    c, pv, _, _ = chi2_contingency(t)
+    ph = (c / t.values.sum()) ** 0.5
+    print(f'  {col:22s} p={pv:.3f} phi={ph:.3f}', '<-- significativo' if pv < 0.05 else '')
+print('-> só salário é significativo, mas cautela: amostra parcial + múltiplas comparações\n')
+
+print('=== 3. Circularidade do streak (não é teste, é diagnóstico) ===')
+corr_partida = s['streak_day'].corr(s['played_next_day'])
+usuarios = s.groupby('user_id').agg(streak_max=('streak_day','max'),
+                                    taxa_next=('played_next_day','mean'))
+corr_usuario = usuarios['streak_max'].corr(usuarios['taxa_next'])
+print(f'corr nível-partida = {corr_partida:.3f} | corr nível-usuário = {corr_usuario:.3f}')
+print('-> a discrepância (0,02 vs 0,82) revela que o streak é circular, não preditor')
+
 # %%
